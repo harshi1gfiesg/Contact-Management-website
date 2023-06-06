@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact List</title>
+</head>
+<body>
+    <h1>Contact List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="contact-list">
+        </tbody>
+    </table>
+    <p><a href="add.html">Add Contact</a></p>
+    
+    <script>
+        // Get the contact list element
+        const contactList = document.getElementById('contact-list');
+    
+        // Get the contacts data from Flask
+        const contacts = JSON.parse('{{ contacts|tojson|safe }}');
+    
+        // Loop through the contacts and create table rows for each one
+        contacts.forEach(function(contact) {
+            // Create a new table row
+            const row = document.createElement('tr');
+    
+            // Create table cells for each contact field
+            const nameCell = document.createElement('td');
+            nameCell.textContent = contact.name;
+            row.appendChild(nameCell);
+    
+            const emailCell = document.createElement('td');
+            emailCell.textContent = contact.email;
+            row.appendChild(emailCell);
+    
+            const phoneCell = document.createElement('td');
+            phoneCell.textContent = contact.phone;
+            row.appendChild(phoneCell);
+    
+            const actionCell = document.createElement('td');
+            const deleteForm = document.createElement('form');
+            deleteForm.action = '{{ url_for('delete', id='__ID__') }}'.replace('__ID__', contact._id.$oid);
+            deleteForm.method = 'POST';
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'submit';
+            deleteButton.textContent = 'Delete';
+            deleteForm.appendChild(deleteButton);
+            actionCell.appendChild(deleteForm);
+            const editLink = document.createElement('a');
+            editLink.href = '{{ url_for('edit', id='__ID__') }}'.replace('__ID__', contact._id.$oid);
+            editLink.textContent = 'Edit';
+            actionCell.appendChild(editLink);
+            row.appendChild(actionCell);
+    
+            // Add the row to the contact list
+            contactList.appendChild(row);
+        });
+    </script>
+    
+</body>
+</html>
